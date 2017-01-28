@@ -7,8 +7,30 @@ var spotifyApi = new SpotifyWebApi({
     redirectUri : 'http://www.example.com/callback'
 });
 
-spotifyApi.setAccessToken('BQAdw1raf2wIus9IOfR8OGIlkQf5_Q1Z7xzIPOeTPM6akX8xsP5iaX7o76cGdjsjBIQF6tMr_EJdnq5ZfOx-PLzmGsOSawbXMnAqTuC_1r0DNgVA7R8q5fwH3NJXP8D76IpU1tJutLCYM9tppes1o3fi8tVYne6CKW9hGO6vk6yLHk-x77wGJpuUsOwG7rF5D0m6ZmjV8AA0DerS4qvh6hxvnCNe9KuWkh7iR9vNXaqJB8ThqdxKEdqcoLyYpwaoEDYpdvPfSWrx2EHnVt74swBZHer37D34qXhboiv8ht-LEevZJjA')
+spotifyApi.setAccessToken('BQAZYR7lutjeiEXWrpqXT0PZ-AQjpCjw6oTm-1zVqMhLykRgurp4Cf08VhoALuAATRQsy_thBcqlCpXIEazCuFwToLMB6KkYY04FJpdivHpaOFG3fqoSHlldY8EoQEyPVuCyM2W9PBaMwXzkMZw3f-tBkX8ELmoBp3dPiNyMP6iyEEA9Tel224k2T5PTF84irFo6KkVxQtpnxvZsy9nCh0L9luHRqFo1zO62TBe4Z5CiwHf0Pa7wk6ctm_9NHBoD6z9PdwLdU5y_9DZSk9PEnyC4l1-QnpvkoNaJKNDXDaqXcJu0bWw')
 
+// default option: Given a list of top songs for each user, 
+// generate five seed songs by choosing the first which alphabetically overlap
+
+function generateSeeds(songList){
+    var sortedList = songList.sort()
+    var seedList = []
+    var j = 0
+    for (var i=1; i < sortedList.length; i++){
+	if (sortedList[i] == sortedList[i-1]
+	    && seedList.length < 5
+	    && (seedList[j] != sortedList[i])){
+	    
+	    seedList.push(sortedList[i])
+	}
+    }
+    if (seedList.length == 5){
+	return seedList
+    }
+    else{
+	return "error"
+    }
+}
 
 // Given up to 5 seed track Ids, returns a promise of an object containing some
 // recommended songs
@@ -22,14 +44,14 @@ function getRecommendations(seed_tracks){
 
 // Given a userId (i.e. username), playlistID, array of songURIs,
 // adds songs onto the specified playlist
-function addToPlaylist(userId, playlistId, songArray, numSongsToAdd=10){   
-    spotifyApi.addTracksToPlaylist(userId, playlistId, songArray).
+function addToPlaylist(userId, playlistId, songUris, numSongsToAdd=10){   
+    spotifyApi.addTracksToPlaylist(userId, playlistId, songUris).
 	then(function(data) {console.log("Added songs to playlist!");},
 	     function(err) {console.log("something went wrong in the playlist update", err);})	     
 }
 
-function updatePlaylist(userId, playlistId, songArray, numSongsToAdd=10){   
-    spotifyApi.replaceTracksInPlaylist(userId, playlistId, songArray).
+function updatePlaylist(userId, playlistId, songUris, numSongsToAdd=10){   
+    spotifyApi.replaceTracksInPlaylist(userId, playlistId, songUris).
 	then(function(data) {console.log("Playlist updated!");},
 	     function(err) {console.log("something went wrong in the playlist update", err);})	     
 }
@@ -40,9 +62,9 @@ function updatePlaylist(userId, playlistId, songArray, numSongsToAdd=10){
 function recommendAndUpdate(userId, playlistId, seed_tracks){
     getRecommendations(seed_tracks).
 	then(function(recom)
-	     {var songArray = recom.body.tracks.map(function(a) {return a.uri});
-	      console.log(songArray)
-	      updatePlaylist(userId, playlistId, songArray);},
+	     {var songUris = recom.body.tracks.map(function(a) {return a.uri});
+	      console.log(songUris)
+	      updatePlaylist(userId, playlistId, songUris);},
 	     function(err) {
 		 console.log('Something went wrong in getting recommendations', err);
 	     });
@@ -54,7 +76,21 @@ function recommendAndUpdate(userId, playlistId, seed_tracks){
 
 
 //Testing with my personal account
-recommendAndUpdate('aqarias', '2TbuUMU7ZhEmI5qP0VMO0J', ['6IqbQelrOB6nTORNj4q2Ma',
+recommendAndUpdate('aqarias', '4Kw8l8lv4fckoEswSX0Uw6', ['6IqbQelrOB6nTORNj4q2Ma',
 							 '6IqbQelrOB6nTORNj4q2Ma' ])
 
-
+//Pick top overlapping song choices
+console.log(generateSeeds(['6IqbQelrOB6nTORNj4q2Ma',
+			   '6IqbQelrOB6nTORNj4q2Ma',
+			   '6IqbQelrOB6nTORNj4q2Ma',			   
+			   '3FeMpPPhGRKieT8zmlJDQz',
+			   '7CSj1zTMJxSz7bnHxgGsSF',
+			   '54MeG5FCVXStJTyNvRu9zN',
+			   '54MeG5FCVXStJTyNvRu9zN',
+			   '5ntbENj4mD1JanFRqWztSr',
+			   '5ntbENj4mD1JanFRqWztSr',
+			   '6vssRuMO2JuX0twM6Nei5H',
+			   '6vssRuMO2JuX0twM6Nei5H',
+			   '2QSuNcQxqFfokvbS7SInHG',
+			   '2QSuNcQxqFfokvbS7SInHG',
+			  ]))
