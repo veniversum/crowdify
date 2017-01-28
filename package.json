@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/veniversum/crowdify/issues"
   },
-  "homepage": "https://github.com/veniversum/crowdify#readme"
+  "homepage": "https://github.com/veniversum/crowdify#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongoose": "^4.7.9",
+    "spotify-web-api-node": "^2.3.6"
+  }
 }
