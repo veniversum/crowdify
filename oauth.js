@@ -7,6 +7,7 @@ var express = require('express'),
     session = require('express-session'),
     passport = require('passport'),
     swig = require('swig'),
+    grabber = require('./pull_user_data')
     SpotifyStrategy = require('passport-spotify').Strategy;
     
 var consolidate = require('consolidate');
@@ -37,12 +38,12 @@ passport.deserializeUser(function(obj, done) {
 passport.use(new SpotifyStrategy(
   serverConfig.oauth,
   function(accessToken, refreshToken, profile, done) {
-    // asynchronous verification, for effect...
     process.nextTick(function () {
       // To keep the example simple, the user's spotify profile is returned to
       // represent the logged-in user. In a typical application, you would want
       // to associate the spotify account with a user record in your database,
       // and return that user instead.
+      grabber.pullAttendeeData(accessToken);
       return done(null, profile);
     });
   }));
@@ -126,9 +127,9 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-// var spotifyApi = new SpotifyWebApi(serverConfig.oauth);
+var spotifyApi = new SpotifyWebApi(serverConfig.oauth);
 // 
-// var attendee_scopes = ["user-top-read"];
+var attendee_scopes = ["user-top-read"];
 // var organizer_scopes = [];
 // var state = "preset";
 // 
