@@ -1,20 +1,19 @@
-var SpotifyWebApi = require('spotify-web-api-node'),
-   mongoose = require('mongoose'),
-   serverConfig = require('./serverConfig.json');
-   
+var SpotifyWebApi = require('spotify-web-api-node');
+var mongoose = require('mongoose');
+var serverConfig = require('./serverConfig.json');
+
+// Import schemas
+var schemas = require('./schemas.js');
+
+// This should be at the top of oauth.js
+mongoose.Promise = global.Promise;
+mongoose.connect(serverConfig.mongo.host + serverConfig.mongo.schema);
+// -------------------------------------------------
+
 function store_data(songList) {
-   mongoose.Promise = global.Promise;
-   mongoose.connect(serverConfig.mongo.host + serverConfig.mongo.schema);
-   var Schema = mongoose.Schema;
-   var songsSchema = new Schema({
-       songNames: [String]
-   });
-
-   var Song = mongoose.model('Song', songsSchema);
-
-   var song = new Song({songNames: songList});
-
-   song.save(function(err) {
+  // List of songs from a user
+   var songs = new schemas.Songs({songNames: songList});
+   songs.save(function(err) {
      if (err) throw err;
      console.log(song.songNames);
      // console.log('Added a new song list');
@@ -22,7 +21,7 @@ function store_data(songList) {
 
    mongoose.connection.close();
 }
-   
+
 exports.pullAttendeeData = function(accessToken) {
   var spotifyApi = new SpotifyWebApi();
   spotifyApi.setAccessToken(accessToken);

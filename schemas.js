@@ -1,6 +1,6 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    ObjectId = Schema.ObjectId;
+    ObjectId = Schema.Types.ObjectId;
 
 var organizerSchema = new Schema({
     username:  String,
@@ -11,10 +11,16 @@ var organizerSchema = new Schema({
 
 var eventSchema = new Schema({
     name: String,
-    organizer: {type: ObjectId, ref: 'User'}
+    organizer: {type: ObjectId, ref: 'Organizer'}
 });
 
+var songsSchema = new Schema({
+    songNames: [String]
+});
+
+var Songs = mongoose.model('Song', songsSchema);
 var Organizer = mongoose.model('Organizer', organizerSchema);
 var Event = mongoose.model('Event', eventSchema);
-var schemas = {"Organizer":Organizer, "Event":Event};
+var schemas = {"Organizer":Organizer, "Event":Event, "Songs":Songs};
+
 module.exports = schemas;
