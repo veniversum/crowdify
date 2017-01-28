@@ -11,7 +11,6 @@ spotifyApi.setAccessToken('BQAZYR7lutjeiEXWrpqXT0PZ-AQjpCjw6oTm-1zVqMhLykRgurp4C
 
 // default option: Given a list of top songs for each user, 
 // generate five seed songs by choosing the first which alphabetically overlap
-
 function generateSeeds(songList){
     var sortedList = songList.sort()
     var seedList = []
@@ -19,16 +18,17 @@ function generateSeeds(songList){
     for (var i=1; i < sortedList.length; i++){
 	if (sortedList[i] == sortedList[i-1]
 	    && seedList.length < 5
-	    && (seedList[j] != sortedList[i])){
+	    && (seedList[j-1] != sortedList[i])){
 	    
 	    seedList.push(sortedList[i])
+	    j = j + 1
 	}
     }
     if (seedList.length == 5){
 	return seedList
     }
     else{
-	return "error"
+	return 
     }
 }
 
@@ -50,7 +50,7 @@ function addToPlaylist(userId, playlistId, songUris, numSongsToAdd=10){
 	     function(err) {console.log("something went wrong in the playlist update", err);})	     
 }
 
-function updatePlaylist(userId, playlistId, songUris, numSongsToAdd=10){   
+function updatePlaylist(userId, playlistId, songUris){   
     spotifyApi.replaceTracksInPlaylist(userId, playlistId, songUris).
 	then(function(data) {console.log("Playlist updated!");},
 	     function(err) {console.log("something went wrong in the playlist update", err);})	     
@@ -78,6 +78,7 @@ function recommendAndUpdate(userId, playlistId, seed_tracks){
 //Testing with my personal account
 recommendAndUpdate('aqarias', '4Kw8l8lv4fckoEswSX0Uw6', generateSeeds(['6IqbQelrOB6nTORNj4q2Ma',
 								       '6IqbQelrOB6nTORNj4q2Ma',
+								       '6IqbQelrOB6nTORNj4q2Ma',
 								       '6IqbQelrOB6nTORNj4q2Ma', 
 								       '3FeMpPPhGRKieT8zmlJDQz',
 								       '7CSj1zTMJxSz7bnHxgGsSF',
@@ -92,4 +93,18 @@ recommendAndUpdate('aqarias', '4Kw8l8lv4fckoEswSX0Uw6', generateSeeds(['6IqbQelr
 								      ]))
 
 //Pick top overlapping song choices
-
+console.log(generateSeeds(['6IqbQelrOB6nTORNj4q2Ma',
+			    '6IqbQelrOB6nTORNj4q2Ma',
+			    '6IqbQelrOB6nTORNj4q2Ma',
+			    '6IqbQelrOB6nTORNj4q2Ma', 
+			    '3FeMpPPhGRKieT8zmlJDQz',
+			    '7CSj1zTMJxSz7bnHxgGsSF',
+			    '54MeG5FCVXStJTyNvRu9zN',
+			    '54MeG5FCVXStJTyNvRu9zN',
+			    '5ntbENj4mD1JanFRqWztSr',
+			    '5ntbENj4mD1JanFRqWztSr',
+			    '6vssRuMO2JuX0twM6Nei5H',
+			    '6vssRuMO2JuX0twM6Nei5H',
+			    '2QSuNcQxqFfokvbS7SInHG',
+			    '2QSuNcQxqFfokvbS7SInHG',
+			  ]))
