@@ -1,0 +1,5 @@
+"oauth" : {
+  "clientId" : "< client ID here>",
+  "clientSecret" : "<client secret here>",
+  "redirectUri" : "<callback address here>"
+}
