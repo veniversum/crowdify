@@ -7,7 +7,8 @@ var express = require('express'),
     session = require('express-session'),
     passport = require('passport'),
     swig = require('swig'),
-    grabber = require('./pull_user_data')
+    grabber = require('./pull_user_data'),
+    schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy;
     
 var consolidate = require('consolidate');
@@ -35,15 +36,30 @@ passport.deserializeUser(function(obj, done) {
 //   Strategies in Passport require a `verify` function, which accept
 //   credentials (in this case, an accessToken, refreshToken, and spotify
 //   profile), and invoke a callback with a user object.
-passport.use(new SpotifyStrategy(
-  serverConfig.oauth,
+passport.use('spotify-attendee', new SpotifyStrategy(
+  serverConfig["spotify-attendee"],
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      // To keep the example simple, the user's spotify profile is returned to
-      // represent the logged-in user. In a typical application, you would want
-      // to associate the spotify account with a user record in your database,
-      // and return that user instead.
       grabber.pullAttendeeData(accessToken);
+      return done(null, profile);
+    });
+  }));
+  
+passport.use('spotify-organizer', new SpotifyStrategy(
+  serverConfig["spotify-organizer"],
+  function(accessToken, refreshToken, profile, done) {
+    process.nextTick(function () {
+      var query = {username: profile.username},
+      update = { username: profile.username,
+        accessToken: accessToken,
+        refreshToken: refreshToken},
+      options = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+  // Find the document
+      schemas.Organizer.findOneAndUpdate(query, update, options, function(error, result) {
+          if (error) return;
+      });
+      profile.isOrganizer = true;
       return done(null, profile);
     });
   }));
@@ -75,6 +91,10 @@ app.get('/account', ensureAuthenticated, function(req, res){
   res.render('account.html', { user: req.user });
 });
 
+app.get('/success', ensureAuthenticated, function(req, res){
+  res.render('success.html', { user: req.user });
+});
+
 app.get('/login', function(req, res){
   res.render('login.html', { user: req.user });
 });
@@ -85,14 +105,14 @@ app.get('/login', function(req, res){
 //   the user to spotify.com. After authorization, spotify will redirect the user
 //   back to this application at /auth/spotify/callback
 app.get('/auth/spotify-attendee',
-  passport.authenticate('spotify', {scope: attendee_scopes, showDialog: true}),
+  passport.authenticate('spotify-attendee', {scope: attendee_scopes, showDialog: true}),
   function(req, res){
 // The request will be redirected to spotify for authentication, so this
 // function will not be called.
 });
 
 app.get('/auth/spotify-organizer',
-  passport.authenticate('spotify', {scope: organizer_scopes, showDialog: true}),
+  passport.authenticate('spotify-organizer', {scope: organizer_scopes}),
   function(req, res){
 // The request will be redirected to spotify for authentication, so this
 // function will not be called.
@@ -103,11 +123,16 @@ app.get('/auth/spotify-organizer',
 //   request. If authentication fails, the user will be redirected back to the
 //   login page. Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get('/callback',
-  passport.authenticate('spotify', { failureRedirect: '/login' }),
+
+app.get('/callback-attendee',
+  passport.authenticate('spotify-attendee', { successRedirect: '/success', failureRedirect: '/login' }),
   function(req, res) {
-    res.redirect('/');
-  });
+});
+
+app.get('/callback-organizer',
+  passport.authenticate('spotify-organizer', { successRedirect: '/account', failureRedirect: '/login' }),
+  function(req, res) {
+});
 
 app.get('/logout', function(req, res){
   req.logout();
@@ -126,28 +151,3 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/login');
 }
-
-var spotifyApi = new SpotifyWebApi(serverConfig.oauth);
-// 
-var attendee_scopes = ["user-top-read"];
-// var organizer_scopes = [];
-// var state = "preset";
-// 
-// var authorizeURL = spotifyApi.createAuthorizeURL(attendee_scopes, state);
-// console.log(authorizeURL);
-// 
-// var app = express();
-
-// 
-// spotifyApi.authorizationCodeGrant(code)
-//   .then(function(data) {
-//     console.log('The token expires in ' + data.body['expires_in']);
-//     console.log('The access token is ' + data.body['access_token']);
-//     console.log('The refresh token is ' + data.body['refresh_token']);
-// 
-//     // Set the access token on the API object to use it in later calls
-//     spotifyApi.setAccessToken(data.body['access_token']);
-//     spotifyApi.setRefreshToken(data.body['refresh_token']);
-//   }, function(err) {
-//     console.log('Something went wrong!', err);
-//   });
