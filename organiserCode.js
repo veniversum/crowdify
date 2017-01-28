@@ -8,19 +8,20 @@ var spotifyApi = new SpotifyWebApi({
     redirectUri : 'http://www.example.com/callback'
 });
 
-spotifyApi.setAccessToken('BQAZYR7lutjeiEXWrpqXT0PZ-AQjpCjw6oTm-1zVqMhLykRgurp4Cf08VhoALuAATRQsy_thBcqlCpXIEazCuFwToLMB6KkYY04FJpdivHpaOFG3fqoSHlldY8EoQEyPVuCyM2W9PBaMwXzkMZw3f-tBkX8ELmoBp3dPiNyMP6iyEEA9Tel224k2T5PTF84irFo6KkVxQtpnxvZsy9nCh0L9luHRqFo1zO62TBe4Z5CiwHf0Pa7wk6ctm_9NHBoD6z9PdwLdU5y_9DZSk9PEnyC4l1-QnpvkoNaJKNDXDaqXcJu0bWw')
+spotifyApi.setAccessToken('BQBMLDCTCSmJsso9zDRHahdjChueNtp-4qHy8xZcchgNOUYUoIuIM-fSPEj76KHEqB1MrX9jC20HqbDfs89RPSxTDz5trjQ-YGc2Q3w241Msh6skNlQItqtJMDlwfRHOCq69GjTOPRJrcb78I2ggLQR4_ZPVIDhyckE9bliB9IEsu9iX_so6k116GcM_bT4XhGR5uB8NaJoU4P_cm2JoO5G1PpDE3GArBpGgGXUsO2ewDqoP0utRYctR0yYL3pZa3vG5EnCAYpEL3TulbaSTn-t8hFys01sO6zkLbFj5tdeDwTYg5OU')
 
 
 // Create a new playlist, then grab the Id of that playlist and return it
-// Still not sure about this asynchronous stuff
+// NB Returns asynchronously
 function createPlaylist(userId, playlistName){
     spotifyApi.createPlaylist(userId, playlistName, { 'public' : false })
 	.then(function(_) {
 	    console.log('Created playlist!')
 	    spotifyApi.getUserPlaylists(userId).
 		then(function(playlists){
-		    console.log(playlists.body.items[0].id)
-		    return playlists.body.items[0].id;},
+		    console.log(playlists.body.items[0].id)}
+		    // return playlists.body.items[0].id;},
+		    // set playlists.body.items[0].id to playlist id variable
 		     function(err){
 			 console.log('something went wrong in getting the ID');
 		     })
@@ -31,4 +32,5 @@ function createPlaylist(userId, playlistName){
 
 
 //Testing with my userId and test playlist
-console.log(createPlaylist('aqarias', 'testPlaylist'))
+var foo = createPlaylist('aqarias', 'testPlaylist')
+console.log(foo)

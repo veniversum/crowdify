@@ -9,6 +9,45 @@ var spotifyApi = new SpotifyWebApi({
 
 spotifyApi.setAccessToken('BQAZYR7lutjeiEXWrpqXT0PZ-AQjpCjw6oTm-1zVqMhLykRgurp4Cf08VhoALuAATRQsy_thBcqlCpXIEazCuFwToLMB6KkYY04FJpdivHpaOFG3fqoSHlldY8EoQEyPVuCyM2W9PBaMwXzkMZw3f-tBkX8ELmoBp3dPiNyMP6iyEEA9Tel224k2T5PTF84irFo6KkVxQtpnxvZsy9nCh0L9luHRqFo1zO62TBe4Z5CiwHf0Pa7wk6ctm_9NHBoD6z9PdwLdU5y_9DZSk9PEnyC4l1-QnpvkoNaJKNDXDaqXcJu0bWw')
 
+function getFromDb(fn0){
+  var mongoose = require('mongoose');
+  serverConfig = require('./serverConfig.json');
+
+  mongoose.connect(serverConfig.mongo.host + serverConfig.mongo.schema);
+  mongoose.Promise = global.Promise;
+  serverConfig = require('./serverConfig.json');
+  var Schema = mongoose.Schema;
+  var songsSchema = new Schema({
+      songNames: [String]
+  });
+
+  var Song = mongoose.model('Song', songsSchema);
+
+  // console.log("e");
+  function setSL(list) {
+    userSongsList = list;
+  }
+  function foo(fn) {
+     Song.find({}, function(err, songs) {
+      if (err) throw err;
+      // console.log(songs[0].songNames);
+      userSongsList = songs.map(function(item) {return item.songNames});
+      fn(userSongsList[0]);
+    });
+  }
+  foo(function(userSongsList) {
+    mongoose.connection.close();
+    fn0(userSongsList);
+  });
+}
+
+getFromDb(function(myvar) {
+  // your code here
+  console.log(myvar);
+});
+
+
+
 // default option: Given a list of top songs for each user, 
 // generate five seed songs by choosing the first which alphabetically overlap
 function generateSeeds(songList){
