@@ -1,0 +1,25 @@
+{
+  "name": "crowdify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/veniversum/crowdify.git"
+  },
+  "keywords": [
+    "spotify",
+    "node",
+    "music",
+    "mongodb"
+  ],
+  "author": "Nick, Qingzhuo, Chris and Daniel",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/veniversum/crowdify/issues"
+  },
+  "homepage": "https://github.com/veniversum/crowdify#readme"
+}
