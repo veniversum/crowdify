@@ -13,7 +13,7 @@ function store_data(songList, event) {
    var songs = new schemas.Songs({songNames: songList});
    songs.save(function(err) {
      if (err) throw err;
-     console.log(song.songNames);
+     console.log(songs.songNames);
      // console.log('Added a new song list');
    });
 }
