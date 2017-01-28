@@ -7,7 +7,7 @@ var spotifyApi = new SpotifyWebApi({
     redirectUri : 'http://www.example.com/callback'
 });
 
-spotifyApi.setAccessToken('BQAqbsMYn0w_CxdULL3xd1mm7urAgPCM0L3PZPNrC-BV2CTiDLVkk4akPYtBuJUERagNKi90xCC0ZNfttLmE-NP2DivRBe6U7UAojDLXnbqDEVJRDHq0MqZW2MGKjqpz6zPaMuQcQV79RMBxmyqD2p95QF9amL0PJTDJm1fi31DckLOup7YDzvpziSbDsBK67bCmQ6jAla0mrYqfiQsDlFIDwqrPteG3dPbKRSBmAoBINIr2NFcczxU-cPuQfEkF231IPYVCk_2YwflPY2_yzAoVDSYUmwv-W4FaiQnd-W-CTkv5lnQ')
+spotifyApi.setAccessToken('BQAdw1raf2wIus9IOfR8OGIlkQf5_Q1Z7xzIPOeTPM6akX8xsP5iaX7o76cGdjsjBIQF6tMr_EJdnq5ZfOx-PLzmGsOSawbXMnAqTuC_1r0DNgVA7R8q5fwH3NJXP8D76IpU1tJutLCYM9tppes1o3fi8tVYne6CKW9hGO6vk6yLHk-x77wGJpuUsOwG7rF5D0m6ZmjV8AA0DerS4qvh6hxvnCNe9KuWkh7iR9vNXaqJB8ThqdxKEdqcoLyYpwaoEDYpdvPfSWrx2EHnVt74swBZHer37D34qXhboiv8ht-LEevZJjA')
 
 
 function getRecommendations(seed_tracks){
@@ -20,26 +20,29 @@ function getRecommendations(seed_tracks){
 
 
 
-function updatePlaylist(songArray, userId, playlistId){   
+function updatePlaylist(userId, playlistId, songArray){   
     spotifyApi.addTracksToPlaylist(userId, playlistId, songArray).
 	then(function(data) {console.log("Playlist updated!");},
-	     function(err) {console.log("something went wrong in the playlist update");})	     
+	     function(err) {console.log("something went wrong in the playlist update", err);})	     
 }
 
 function recommendAndUpdate(userId, playlistId, seed_tracks){
-    // Generate recommendations based on seed artists, then
+    // Generate recommendations based on seed tracks, then
     // add these songs to the playlist
-    getRecommendations(seed_artists).
+    getRecommendations(seed_tracks).
 	then(function(recom)
-	     {var songArray = recom.body.tracks.map(function(a) {return a.album.id});
-	      updatePlaylist(songArray, playlistId);},
+	     {var songArray = recom.body.tracks.map(function(a) {return a.uri});
+	      updatePlaylist(userId, playlistId, songArray);},
 	     function(err) {
 		 console.log('Something went wrong in getting recommendations', err);
 	     });
-}    
+}
+
+// spotifyApi.getUserPlaylists('aqarias').then(function(data) {console.log(data.body.items);},
+//  					    function(err) {console.log("something went wrong in the getting user", err);})	     
 
 
-recommendAndUpdate('aqarias', 'myCoolPlaylist5', ['6mfK6Q2tzLMEchAr0e9Uzu',
+recommendAndUpdate('aqarias', '2TbuUMU7ZhEmI5qP0VMO0J', ['6mfK6Q2tzLMEchAr0e9Uzu',
 				     '4DYFVNKZ1uixa6SQTvzQwJ'])
 
 
