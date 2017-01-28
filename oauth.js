@@ -9,9 +9,14 @@ var express = require('express'),
     swig = require('swig'),
     grabber = require('./pull_user_data'),
     schemas = require('./schemas'),
-    SpotifyStrategy = require('passport-spotify').Strategy;
+    SpotifyStrategy = require('passport-spotify').Strategy,
+    mongoose = require('mongoose');
     
 var consolidate = require('consolidate');
+
+mongoose.Promise = global.Promise;
+mongoose.connect(serverConfig.mongo.host + serverConfig.mongo.schema);
+
 
 var attendee_scopes = ["user-top-read"],
     organizer_scopes = [];
@@ -40,7 +45,7 @@ passport.use('spotify-attendee', new SpotifyStrategy(
   serverConfig["spotify-attendee"],
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
-      grabber.pullAttendeeData(accessToken);
+      profile.accessToken = accessToken;
       return done(null, profile);
     });
   }));
@@ -130,8 +135,10 @@ app.get('/auth/spotify-organizer',
 //   which, in this example, will redirect the user to the home page.
 
 app.get('/callback-attendee',
-  passport.authenticate('spotify-attendee', { successRedirect: '/success', failureRedirect: '/login' }),
+  passport.authenticate('spotify-attendee', { failureRedirect: '/login' }),
   function(req, res) {
+    grabber.pullAttendeeData(req.user.accessToken, req.session.event);
+    res.redirect('/success')
 });
 
 app.get('/callback-organizer',
