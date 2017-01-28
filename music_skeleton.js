@@ -42,8 +42,8 @@ function getFromDb(fn0){
 }
 
 getFromDb(function(myvar) {
-  // your code here
-  console.log(myvar);
+    var seeds = generateSeeds(myvar)    
+    console.log(myvar);
 });
 
 
@@ -98,16 +98,19 @@ function updatePlaylist(userId, playlistId, songUris){
 // Given 5 seed track Ids, user and playlist Id,
 // generate recommendations based on (max 5) seed tracks, then
 // regenerate the playlist with these songs in it
-function recommendAndUpdate(userId, playlistId, seed_tracks){
-    getRecommendations(seed_tracks).
-	then(function(recom)
-	     {var songUris = recom.body.tracks.map(function(a) {return a.uri});
-	      console.log(songUris)
-	      updatePlaylist(userId, playlistId, songUris);},
-	     function(err) {
-		 console.log('Something went wrong in getting recommendations', err);
-	     });
-}
+function recommendAndUpdate(userId, playlistId){
+    getFromDb(function(seed_tracks) {
+	var seeds = generateSeeds(seed_tracks)    
+	console.log(myvar);
+	getRecommendations(seeds).
+	    then(function(recom)
+		 {var songUris = recom.body.tracks.map(function(a) {return a.uri});
+		  console.log(songUris)
+		  updatePlaylist(userId, playlistId, songUris);},
+		 function(err) {
+		     console.log('Something went wrong in getting recommendations', err);
+		 });
+    })
 
 //  spotifyApi.getUserPlaylists('aqarias').then(function(data) {console.log(data.body.items);},
 //  					    function(err) {console.log("something went wrong in the getting user", err);})	     
