@@ -76,21 +76,20 @@ function recommendAndUpdate(userId, playlistId, seed_tracks){
 
 
 //Testing with my personal account
-recommendAndUpdate('aqarias', '4Kw8l8lv4fckoEswSX0Uw6', ['6IqbQelrOB6nTORNj4q2Ma',
-							 '6IqbQelrOB6nTORNj4q2Ma' ])
+recommendAndUpdate('aqarias', '4Kw8l8lv4fckoEswSX0Uw6', generateSeeds(['6IqbQelrOB6nTORNj4q2Ma',
+								       '6IqbQelrOB6nTORNj4q2Ma',
+								       '6IqbQelrOB6nTORNj4q2Ma', 
+								       '3FeMpPPhGRKieT8zmlJDQz',
+								       '7CSj1zTMJxSz7bnHxgGsSF',
+								       '54MeG5FCVXStJTyNvRu9zN',
+								       '54MeG5FCVXStJTyNvRu9zN',
+								       '5ntbENj4mD1JanFRqWztSr',
+								       '5ntbENj4mD1JanFRqWztSr',
+								       '6vssRuMO2JuX0twM6Nei5H',
+								       '6vssRuMO2JuX0twM6Nei5H',
+								       '2QSuNcQxqFfokvbS7SInHG',
+								       '2QSuNcQxqFfokvbS7SInHG',
+								      ]))
 
 //Pick top overlapping song choices
-console.log(generateSeeds(['6IqbQelrOB6nTORNj4q2Ma',
-			   '6IqbQelrOB6nTORNj4q2Ma',
-			   '6IqbQelrOB6nTORNj4q2Ma',			   
-			   '3FeMpPPhGRKieT8zmlJDQz',
-			   '7CSj1zTMJxSz7bnHxgGsSF',
-			   '54MeG5FCVXStJTyNvRu9zN',
-			   '54MeG5FCVXStJTyNvRu9zN',
-			   '5ntbENj4mD1JanFRqWztSr',
-			   '5ntbENj4mD1JanFRqWztSr',
-			   '6vssRuMO2JuX0twM6Nei5H',
-			   '6vssRuMO2JuX0twM6Nei5H',
-			   '2QSuNcQxqFfokvbS7SInHG',
-			   '2QSuNcQxqFfokvbS7SInHG',
-			  ]))
+
