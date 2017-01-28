@@ -87,12 +87,17 @@ app.get('/', function(req, res){
   res.render('index.html', { user: req.user });
 });
 
+app.get('/event/:eventId', function(req, res){
+  req.session.event = req.params.eventId;
+  res.render('event.html', { user: req.user, event: req.params.eventId });
+});
+
 app.get('/account', ensureAuthenticated, function(req, res){
   res.render('account.html', { user: req.user });
 });
 
 app.get('/success', ensureAuthenticated, function(req, res){
-  res.render('success.html', { user: req.user });
+  res.render('success.html', { user: req.user , event: req.session.event});
 });
 
 app.get('/login', function(req, res){
