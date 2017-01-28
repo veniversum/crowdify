@@ -21,5 +21,8 @@
   "bugs": {
     "url": "https://github.com/veniversum/crowdify/issues"
   },
-  "homepage": "https://github.com/veniversum/crowdify#readme"
+  "homepage": "https://github.com/veniversum/crowdify#readme",
+  "dependencies": {
+    "passport-spotify": "^0.3.1"
+  }
 }
