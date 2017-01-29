@@ -11,7 +11,8 @@ var express = require('express'),
     generator = require('./music_skeleton'),
     schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy,
-    mongoose = require('mongoose');
+    mongoose = require('mongoose'),
+    slug = require('slugify');
 
 
 var consolidate = require('consolidate');
@@ -48,6 +49,8 @@ passport.use('spotify-attendee', new SpotifyStrategy(
   function(accessToken, refreshToken, profile, done) {
     process.nextTick(function () {
       profile.accessToken = accessToken;
+      schemas.User.update({username: profile.username}, {$set:{accessToken: accessToken,
+      refreshToken: refreshToken}}, { upsert: true, new: true, setDefaultsOnInsert: true }, function(err){if (err) throw err;});
       return done(null, profile);
     });
   }));
@@ -61,7 +64,8 @@ passport.use('spotify-organizer', new SpotifyStrategy(
         accessToken: accessToken,
         refreshToken: refreshToken},
       options = { upsert: true, new: true, setDefaultsOnInsert: true };
-
+      schemas.User.update({username: profile.username}, {$set:{accessToken: accessToken,
+      refreshToken: refreshToken}}, { upsert: true, new: true, setDefaultsOnInsert: true }, function(err){if (err) throw err;});
   // Find the document
       schemas.Organizer.findOneAndUpdate(query, update, options, function(error, result) {
           if (error) return;
@@ -105,10 +109,19 @@ app.get('/event/:eventId', function(req, res){
       req.session.event = req.params.eventId;
       schemas.Organizer.findOne({_id:event.organizer}, function(err, organizer) {
         if (req.isAuthenticated() && req.user.isOrganizer && organizer.username == req.user.username) {
-          res.render('event.html', { user: req.user, event: req.params.eventId, organizer: true });
+          res.render('event.html', { user: req.user, slug: event.name, event: event.title, organizer: true });
+        } else if (req.isAuthenticated()){
+          schemas.User.findOne({username: req.user.username}, function(err, user){
+            if (err) throw err;
+            if (user.attendingEvents.id(event._id)) {
+              res.render('success.html', { user: req.user, slug: event.name, event: event.title });
+            } else {
+              res.render('event.html', { user: req.user, slug: event.name, event: event.title });
+            } 
+          })
         } else {
-          res.render('event.html', { user: req.user, event: req.params.eventId });
-        } 
+          res.render('event.html', { user: req.user, slug: event.name, event: event.title }); 
+        }
       });      
     } else {
       res.render('eventNotFound.html');
@@ -124,13 +137,19 @@ app.get('/createEvent', ensureIsOrganizer, function(req, res){
 app.post('/createEvent', ensureIsOrganizer, function(req, res){
   console.log(req.body);
   var eventName = req.body.eventName;
+  var sluggedName = slug(eventName);
   var organizerId = schemas.Organizer.findOne({"username": req.user.username}, function (err, organizer){
     if (err) throw err;
-    var newEvent = new schemas.Event({"name": eventName, "organizer": organizer._id});
+    var newEvent = new schemas.Event({"title" : eventName, "name": sluggedName, "organizer": organizer._id});
     newEvent.save(function(err) {
       if (err) throw err;
       generator.createPlaylist(req.user.accessToken, req.user.id, eventName)
-      res.render('eventCreated.html', { eventName: eventName});
+      schemas.Event.findOne({name:sluggedName}, function(err, event) {
+        if (event) {
+          schemas.User.update({username: req.user.username}, {$push:{hostedEvents: event}}, function(err){if (err) throw err;});
+        }
+      });
+      res.render('eventCreated.html', { eventName: eventName, sluggedName: sluggedName});
     });
   });
   // console.log("organizerId=", organizerId);
@@ -142,7 +161,17 @@ function ensureIsOrganizer(req, res, next){
 }
 
 app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account.html', { user: req.user });
+  schemas.User.findOne({username:req.user.id}, function(err, user) {
+    var hostedEvents = [];
+    var attendingEvents = [];
+    if (user) {
+      hostedEvents = user.hostedEvents.map(function(e){return [e.name, e.title]});
+      attendingEvents = user.attendingEvents.map(function(e){return [e.name, e.title]});
+    }
+    var hasEvents = hostedEvents.length + attendingEvents.length;
+    console.log(hasEvents); 
+   res.render('account.html', { user: req.user, hostedEvents: hostedEvents, attendingEvents: attendingEvents, hasEvents: hasEvents});
+  });
 });
 
 app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
@@ -151,7 +180,7 @@ app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
 });
 
 app.get('/success', ensureAuthenticated, function(req, res){
-  res.render('success.html', { user: req.user , event: req.session.event});
+  res.render('success.html', { user: req.user , event: req.session.eventName || req.session.event});
 });
 
 app.get('/login', function(req, res){
@@ -186,12 +215,26 @@ app.get('/auth/spotify-organizer',
 app.get('/callback-attendee',
   passport.authenticate('spotify-attendee', { failureRedirect: '/login' }),
   function(req, res) {
-    grabber.pullAttendeeData(req.user.accessToken, req.session.event);
-    res.redirect('/success')
+    schemas.Event.findOne({name:req.session.event}, function(err, event) {
+      if (event) {
+        req.session.eventName = event.title;
+        schemas.User.findOne({username: req.user.username}, function(err, user){
+          if (err) throw err;
+          if (user.attendingEvents.id(event._id)) {
+            res.render('success.html', { user: req.user, slug: event.name, event: event.title });
+          } else {
+            grabber.pullAttendeeData(req.user.accessToken, req.session.event);
+            schemas.User.update({username: req.user.username}, {$push:{attendingEvents: event}}, function(err){if (err) throw err;});
+            res.render('event.html', { user: req.user, slug: event.name, event: event.title });
+          } 
+        })
+      }
+    });
+    res.redirect('/event/'+req.session.event)
 });
 
 app.get('/callback-organizer',
-  passport.authenticate('spotify-organizer', { successRedirect: '/account', failureRedirect: '/login' }),
+  passport.authenticate('spotify-organizer', { successRedirect: '/', failureRedirect: '/login' }),
   function(req, res) {
 });
 
