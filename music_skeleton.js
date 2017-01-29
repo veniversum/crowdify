@@ -55,10 +55,26 @@ function recommendAndUpdate (userId, eventId, spotifyApi){
 
 // Given up to 5 seed track Ids, returns a promise of an object containing some
 // recommended songs
-function getRecommendations(seed_tracks, spotifyApi){
+function getRecommendations(
+  seed_tracks, spotifyApi,
+  dancing=false, energetic=false, positive=false, instrumental=false) {
+
     var argument = {min_energy: 0.4,
         seed_tracks: seed_tracks,
         min_popularity: 50}
+    if (dancing) {
+      argument.set(danceability, 0.8)
+    }
+    if (energetic) {
+      argument.set(energy, 0.85)
+    }
+    if (positive) {
+      argument.set(valence, 0.9)
+    }
+    if (instrumental) {
+      argument.set(instrumentalness, 0.9)
+    }
+
     var recommendations = spotifyApi.getRecommendations(argument);
     return recommendations;
 }
