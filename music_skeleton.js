@@ -146,6 +146,7 @@ function generateSeeds(songList, topN=10) {
     for (var i=0; i<keys.length; ++i) {
       pairs.push([keys[i], songCount[keys[i]]])
     }
+    pairs.sort(function(a, b){return 0.5 - Math.random()});
     var sortedPairs = pairs.sort(function(a,b) {return b[1]-a[1]})
     sortedPairs = sortedPairs.slice(0,topN)
     var sortedSongs = sortedPairs.map(function(x) {return x[0]})
