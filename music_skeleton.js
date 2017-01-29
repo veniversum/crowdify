@@ -12,12 +12,12 @@ exports.recommendAndUpdate = function(accessToken, userId, eventId,
                      dancing, energetic, positive, instrumental);
 }
 
-exports.createPlaylist = function(accessToken, userId, eventName){
+exports.createPlaylist = function(accessToken, userId, eventName, sluggedName){
   var spotifyApi = new SpotifyWebApi(serverConfig.oauth);
   spotifyApi.setAccessToken(accessToken);
   spotifyApi.createPlaylist(userId, eventName + ' Crowdify', { 'public' : true })
 	.then(function(data) {
-      schemas.Event.update({"name": eventName}, {$set : {"playlistId": data.body.id}},
+      schemas.Event.update({"name": sluggedName}, {$set : {"playlistId": data.body.id}},
                  function (err) {
                      if (err) throw err;
                  });
@@ -33,7 +33,7 @@ exports.createPlaylist = function(accessToken, userId, eventName){
 // generate recommendations based on (max 5) seed tracks, then
 // regenerate the playlist with these songs in it
 function recommendAndUpdate (userId, eventId, spotifyApi,
-                             dancing, energetic, positive, instrumental))){
+                             dancing, energetic, positive, instrumental){
   schemas.Event.findOne({name: eventId}, function(err, event){
     seed_tracks = [].concat.apply([], event.songNames);
     console.log(seed_tracks);
@@ -43,7 +43,7 @@ function recommendAndUpdate (userId, eventId, spotifyApi,
     var start=0;
     for (var i=0; i<seed_tracks.length/5; ++i) {
       getRecommendations(seeds.slice(start, start+5), spotifyApi,
-                         dancing, energetic, positive, instrumental))
+                         dancing, energetic, positive, instrumental)
         .then(function(recom) {
           var songUris = recom.body.tracks.map(function(a) {return a.uri});
           console.log(songUris);

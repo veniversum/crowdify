@@ -143,7 +143,7 @@ app.post('/createEvent', ensureIsOrganizer, function(req, res){
     var newEvent = new schemas.Event({"title" : eventName, "name": sluggedName, "organizer": organizer._id});
     newEvent.save(function(err) {
       if (err) throw err;
-      generator.createPlaylist(req.user.accessToken, req.user.id, eventName)
+      generator.createPlaylist(req.user.accessToken, req.user.id, eventName, sluggedName)
       schemas.Event.findOne({name:sluggedName}, function(err, event) {
         if (event) {
           schemas.User.update({username: req.user.username}, {$push:{hostedEvents: event}}, function(err){if (err) throw err;});
@@ -221,16 +221,17 @@ app.get('/callback-attendee',
         schemas.User.findOne({username: req.user.username}, function(err, user){
           if (err) throw err;
           if (user.attendingEvents.id(event._id)) {
-            res.render('success.html', { user: req.user, slug: event.name, event: event.title });
+            res.redirect('/event/'+req.session.event)
           } else {
             grabber.pullAttendeeData(req.user.accessToken, req.session.event);
             schemas.User.update({username: req.user.username}, {$push:{attendingEvents: event}}, function(err){if (err) throw err;});
-            res.render('event.html', { user: req.user, slug: event.name, event: event.title });
+            res.redirect('/event/'+req.session.event)
           } 
         })
+      } else {
+        res.render('eventNotFound.html');
       }
     });
-    res.redirect('/event/'+req.session.event)
 });
 
 app.get('/callback-organizer',
