@@ -6,8 +6,19 @@
 		<div class="inner">
       <h1>The event has successfully been created!</h1>
       <p>Share this link to you attendees so that they can log in!</p>
-      <a href="/event/{{ eventName }}">http://localhost:8888/event/{{ eventName }}</a>
+      <!-- <a href="/event/{{ eventName }}">http://localhost:8888/event/{{ eventName }}</a> -->
+			<input type="text" id="link-to-clipboard" value="/event/{{ eventName }}" style="color: black;"></input>
+			<ul class="actions" style="margin-top: 20px;">
+				<li><a class="button special icon fa-clipboard" data-clipboard-target="#link-to-clipboard">Copy to clipboard!</a></li>
+			</ul>
     </div>
   </section>
 </div>
+<script>
+	var content = document.getElementById("link-to-clipboard").value;
+	var newContent = window.location.origin + content;
+	document.getElementById("link-to-clipboard").value = newContent;
+</script>
+<script src="/clipboard.min.js"></script>
+<script>new Clipboard('.button');</script>
 {% endblock %}
