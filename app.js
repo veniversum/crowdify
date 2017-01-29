@@ -194,6 +194,7 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
+// for heroku
 app.listen(process.env.PORT || 8888);
 
 
