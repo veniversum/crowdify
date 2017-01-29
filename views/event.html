@@ -4,15 +4,17 @@
 <div id="wrapper">
 	<section id="intro" class="wrapper style1 fullscreen fade-up">
 		<div class="inner">
-      <h1>Welcome to the Crowdify page for {{ event }}!</br></h1>
+      <h2>Welcome to the Crowdify page for {{ event }}!</br></h2>
       {% if !user %}
       <p>Log in with Spotify to contribute your music preferences.</br></p>
+      {% elseif organizer%}
+      <p>Click the button below to generate your playlist.</br></p>
       {% else %}
       <p>Click the button below to contribute your music preferences.</br></p>
       {% endif %}
       <ul class="actions">
         {% if organizer %}
-        <li><a href="/generatePlaylist/{{ event }}" class="button scrolly">Generate Playlist</a></li>
+        <li><a href="/generatePlaylist/{{ slug }}" class="button scrolly">Generate Playlist</a></li>
         {% else %}
           {% if !user %}
           <li><a href="/auth/spotify-attendee/" class="button scrolly">Login as Attendee</a></li>

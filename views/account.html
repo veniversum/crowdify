@@ -4,7 +4,33 @@
 <div id="wrapper">
 	<section id="intro" class="wrapper style1 fullscreen fade-up">
 		<div class="inner">
-			<h1>Hello {{ user.displayName || user.username || user.id }}!</h1>
+      {% if hasEvents %}
+      <div class="features">
+        
+				<section>
+					<span class="icon major fa-code"></span>
+					<h3>Hosting these Events</h3>
+          <ul>
+          {% for event in hostedEvents %}
+					<li><a href="/event/{{ event[0] }}">{{ event[1] }}</a></li>
+          {% endfor %}
+          </ul>
+				</section>
+
+				<section>
+					<span class="icon major fa-code"></span>
+					<h3>Attending these Events</h3>
+          <ul>
+          {% for event in attendingEvents %}
+          <li><a href="/event/{{ event[0] }}">{{ event[1] }}</a></li>
+          {% endfor %}
+          </ul>          
+				</section>
+			</div>
+      {% else %}
+      <h1>You do not have any events yet!</h1>
+      <p>Create one or sign up for one!</p>
+      {% endif %}
 			<p>Profile: <a href=" {{ user.profileUrl }}">{{ user.profileUrl }}</a></p>
       <ul class="actions">
 				<li><a href="/createEvent" class="button scrolly">Create event!</a></li>
