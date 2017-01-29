@@ -11,8 +11,7 @@ var express = require('express'),
     generator = require('./music_skeleton'),
     schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy,
-    mongoose = require('mongoose'),
-    slug = require('slugify');
+    mongoose = require('mongoose');
 
 
 var consolidate = require('consolidate');
