@@ -10,19 +10,15 @@ var schemas = require('./schemas.js');
 
 function store_data(songList, event) {
   // List of songs from a user
-   var songs = new schemas.Songs({songNames: songList});
-   songs.save(function(err) {
+   schemas.Event.update({name:event}, {$push:{songNames:songList}}, function(err) {
      if (err) throw err;
-     console.log(songs.songNames);
-     // console.log('Added a new song list');
    });
 }
 
 exports.pullAttendeeData = function(accessToken, event) {
   var spotifyApi = new SpotifyWebApi();
   spotifyApi.setAccessToken(accessToken);
-
-  spotifyApi.getMyTopTracks(limit=2)
+  spotifyApi.getMyTopTracks(limit=50)
     .then(function(data) {
       var songList = data.body.items.map(function(item) {return item.id});
       store_data(songList, event);

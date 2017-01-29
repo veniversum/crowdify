@@ -100,11 +100,16 @@ app.get('/', function(req, res){
 
 app.get('/event/:eventId', function(req, res){
   var Event = schemas.Event;
-  Event.count({'name': req.params.eventId}, function(err, count){
-    console.log("count= ", count);
-    if (count) {
+  Event.findOne({'name': req.params.eventId}, function(err, event){
+    if (event) {
       req.session.event = req.params.eventId;
-      res.render('event.html', { user: req.user, event: req.params.eventId });
+      schemas.Organizer.findOne({_id:event.organizer}, function(err, organizer) {
+        if (req.isAuthenticated() && req.user.isOrganizer && organizer.username == req.user.username) {
+          res.render('event.html', { user: req.user, event: req.params.eventId, organizer: true });
+        } else {
+          res.render('event.html', { user: req.user, event: req.params.eventId });
+        } 
+      });      
     } else {
       res.render('eventNotFound.html');
     }
@@ -124,6 +129,7 @@ app.post('/createEvent', ensureIsOrganizer, function(req, res){
     var newEvent = new schemas.Event({"name": eventName, "organizer": organizer._id});
     newEvent.save(function(err) {
       if (err) throw err;
+      generator.createPlaylist(req.user.accessToken, req.user.id, eventName)
       res.render('eventCreated.html', { eventName: eventName});
     });
   });
@@ -140,8 +146,7 @@ app.get('/account', ensureAuthenticated, function(req, res){
 });
 
 app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
-  var eventPlaylist = '0AapElQgySS1iY66uclrra';
-  generator.recommendAndUpdate(req.user.accessToken, req.user.username, eventPlaylist);
+  generator.recommendAndUpdate(req.user.accessToken, req.user.username, req.params.eventId);
   res.render('account.html', { user: req.user });
 });
 

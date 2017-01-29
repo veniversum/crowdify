@@ -11,8 +11,7 @@
 				<li><a href="/auth/spotify-organizer" class="button scrolly">Login</a></li>
 			</ul>
 			{% else %}
-			<h1>Hello, {{ user.username }}.</h1>
-			<p>Your email is {{ user.emails[0].value }}</p>
+			<h1>Hello, {{ user.displayName || user.username || user.id }}.</h1>
 			{% endif %}
 		</div>
 	</section>
