@@ -8,6 +8,7 @@ var express = require('express'),
     passport = require('passport'),
     swig = require('swig'),
     grabber = require('./pull_user_data'),
+    generator = require('./music_skeleton'),
     schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy,
     mongoose = require('mongoose');
@@ -19,7 +20,7 @@ mongoose.connect(serverConfig.mongo.host + serverConfig.mongo.schema);
 
 
 var attendee_scopes = ["user-top-read"],
-    organizer_scopes = [];
+    organizer_scopes = ["playlist-read-private", "playlist-modify-private", "user-top-read", "playlist-modify-public"];
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -65,6 +66,7 @@ passport.use('spotify-organizer', new SpotifyStrategy(
           if (error) return;
       });
       profile.isOrganizer = true;
+      profile.accessToken = accessToken;
       return done(null, profile);
     });
   }));
@@ -98,6 +100,12 @@ app.get('/event/:eventId', function(req, res){
 });
 
 app.get('/account', ensureAuthenticated, function(req, res){
+  res.render('account.html', { user: req.user });
+});
+
+app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
+  var eventPlaylist = '0AapElQgySS1iY66uclrra';
+  generator.recommendAndUpdate(req.user.accessToken, req.user.username, eventPlaylist);
   res.render('account.html', { user: req.user });
 });
 
