@@ -4,10 +4,12 @@ var SpotifyWebApi = require('spotify-web-api-node'),
   mongoose = require('mongoose');
 
 // credentials are optional
-exports.recommendAndUpdate = function(accessToken, userId, eventId) {
+exports.recommendAndUpdate = function(accessToken, userId, eventId,
+  dancing=false, energetic=false, positive=false, instrumental=false) {
   var spotifyApi = new SpotifyWebApi(serverConfig.oauth);
   spotifyApi.setAccessToken(accessToken);
-  recommendAndUpdate(userId, eventId, spotifyApi);
+  recommendAndUpdate(userId, eventId, spotifyApi,
+                     dancing, energetic, positive, instrumental);
 }
 
 exports.createPlaylist = function(accessToken, userId, eventName){
@@ -30,7 +32,8 @@ exports.createPlaylist = function(accessToken, userId, eventName){
 // Given 5 seed track Ids, user and playlist Id,
 // generate recommendations based on (max 5) seed tracks, then
 // regenerate the playlist with these songs in it
-function recommendAndUpdate (userId, eventId, spotifyApi){
+function recommendAndUpdate (userId, eventId, spotifyApi,
+                             dancing, energetic, positive, instrumental))){
   schemas.Event.findOne({name: eventId}, function(err, event){
     seed_tracks = [].concat.apply([], event.songNames);
     console.log(seed_tracks);
@@ -39,7 +42,8 @@ function recommendAndUpdate (userId, eventId, spotifyApi){
     // console.log("seeds= ", seeds);
     var start=0;
     for (var i=0; i<seed_tracks.length/5; ++i) {
-      getRecommendations(seeds.slice(start, start+5), spotifyApi)
+      getRecommendations(seeds.slice(start, start+5), spotifyApi,
+                         dancing, energetic, positive, instrumental))
         .then(function(recom) {
           var songUris = recom.body.tracks.map(function(a) {return a.uri});
           console.log(songUris);
@@ -55,9 +59,8 @@ function recommendAndUpdate (userId, eventId, spotifyApi){
 
 // Given up to 5 seed track Ids, returns a promise of an object containing some
 // recommended songs
-function getRecommendations(
-  seed_tracks, spotifyApi,
-  dancing=false, energetic=false, positive=false, instrumental=false) {
+function getRecommendations(seed_tracks, spotifyApi,
+                            dancing, energetic, positive, instrumental) {
 
     var argument = {min_energy: 0.4,
         seed_tracks: seed_tracks,
