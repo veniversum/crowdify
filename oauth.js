@@ -11,7 +11,7 @@ var express = require('express'),
     schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy,
     mongoose = require('mongoose');
-    
+
 var consolidate = require('consolidate');
 
 mongoose.Promise = global.Promise;
@@ -49,7 +49,7 @@ passport.use('spotify-attendee', new SpotifyStrategy(
       return done(null, profile);
     });
   }));
-  
+
 passport.use('spotify-organizer', new SpotifyStrategy(
   serverConfig["spotify-organizer"],
   function(accessToken, refreshToken, profile, done) {
@@ -93,9 +93,41 @@ app.get('/', function(req, res){
 });
 
 app.get('/event/:eventId', function(req, res){
-  req.session.event = req.params.eventId;
-  res.render('event.html', { user: req.user, event: req.params.eventId });
+  var Event = schemas.Event;
+  Event.count({'name': req.params.eventId}, function(err, count){
+    console.log("count= ", count);
+    if (count) {
+      req.session.event = req.params.eventId;
+      res.render('event.html', { user: req.user, event: req.params.eventId });
+    } else {
+      res.render('eventNotFound.html');
+    }
+  });
+
 });
+
+app.get('/createEvent', ensureIsOrganizer, function(req, res){
+  res.render('createEvent.html', { user: req.user});
+});
+
+app.post('/createEvent', ensureIsOrganizer, function(req, res){
+  console.log(req.body);
+  var eventName = req.body.eventName;
+  var organizerId = schemas.Organizer.findOne({"username": req.user.username}, function (err, organizer){
+    if (err) throw err;
+    var newEvent = new schemas.Event({"name": eventName, "organizer": organizer._id});
+    newEvent.save(function(err) {
+      if (err) throw err;
+      res.render('eventCreated.html', { eventName: eventName});
+    });
+  });
+  // console.log("organizerId=", organizerId);
+});
+
+function ensureIsOrganizer(req, res, next){
+  if (req.isAuthenticated() && req.user.isOrganizer) { return next(); }
+  res.redirect('/login');
+}
 
 app.get('/account', ensureAuthenticated, function(req, res){
   res.render('account.html', { user: req.user });

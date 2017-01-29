@@ -11,7 +11,8 @@ var organizerSchema = new Schema({
 
 var eventSchema = new Schema({
     name: String,
-    organizer: {type: ObjectId, ref: 'Organizer'}
+    organizer: {type: ObjectId, ref: 'Organizer'},
+    songNames: {type: ObjectId, ref: 'Songs'}
 });
 
 var songsSchema = new Schema({
