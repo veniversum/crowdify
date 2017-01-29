@@ -139,7 +139,7 @@ function countOccurences(songList) {
 }
 
 // Generates a large array of seeds, take 5 at at time
-function generateSeeds(songList, topN=10) {
+function generateSeeds(songList, topN=20) {
     var songCount = countOccurences(songList);
     var keys = Object.keys(songCount)
     var pairs = []
