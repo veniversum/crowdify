@@ -13,6 +13,9 @@ var express = require('express'),
     SpotifyStrategy = require('passport-spotify').Strategy,
     mongoose = require('mongoose');
 
+// Fixes bug https://github.com/tj/consolidate.js/pull/134
+app.locals.cache = "memory";
+
 var consolidate = require('consolidate');
 
 mongoose.Promise = global.Promise;
@@ -191,7 +194,8 @@ app.get('/logout', function(req, res){
   res.redirect('/');
 });
 
-app.listen(8888);
+// for heroku
+app.listen(process.env.PORT || 8888);
 
 
 // Simple route middleware to ensure user is authenticated.
