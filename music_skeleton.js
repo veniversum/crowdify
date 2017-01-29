@@ -101,8 +101,8 @@ function generateSeeds(songList){
     if (seedList.length == 5){
 	return seedList
     }
-    else{
-	return 
+    else{ 
+      return songList.slice(0,5)
     }
 }
 

@@ -24,7 +24,7 @@ exports.pullAttendeeData = function(accessToken, event) {
 
   spotifyApi.getMyTopTracks(limit=2)
     .then(function(data) {
-      var songList = data.body.items.map(function(item) {return item.name});
+      var songList = data.body.items.map(function(item) {return item.id});
       store_data(songList, event);
     }, function(err) {
       throw err;
