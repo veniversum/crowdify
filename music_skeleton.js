@@ -63,19 +63,22 @@ function getRecommendations(seed_tracks, spotifyApi,
                             dancing, energetic, positive, instrumental) {
 
     var argument = {min_energy: 0.4,
-        seed_tracks: seed_tracks,
-        min_popularity: 50}
+		    seed_tracks: seed_tracks,
+		    min_danceability: 0.0,
+		    min_valence: 0.0,
+		    min_instrumentalness: 0.0,
+		    min_popularity: 50}
     if (dancing) {
-      argument.set(danceability, 0.8)
+      argument.min_danceability = 0.8
     }
     if (energetic) {
-      argument.set(energy, 0.85)
+      argument.min_energy = 0.85
     }
     if (positive) {
-      argument.set(valence, 0.9)
+      argument.min_valence = 0.9
     }
     if (instrumental) {
-      argument.set(instrumentalness, 0.9)
+      argument.min_instrumentalness = 0.9
     }
 
     var recommendations = spotifyApi.getRecommendations(argument);
