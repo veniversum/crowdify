@@ -34,6 +34,6 @@
     "passport-spotify": "^0.3.1",
     "spotify-web-api-node": "^2.3.6",
     "swig": "~1.4.2",
-    "slugify": "~1.1.0"
+    "mongoose-url-slugs": "~0.2.1"
   }
 }
