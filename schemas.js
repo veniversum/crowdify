@@ -1,7 +1,9 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
     ObjectId = Schema.Types.ObjectId,
-    URLSlugs = require('mongoose-url-slugs');
+    slug = require('mongoose-slug-generator');
+
+mongoose.plugin(slug);
 
 var organizerSchema = new Schema({
     username:  String,
@@ -11,15 +13,13 @@ var organizerSchema = new Schema({
 });
 
 var eventSchema = new Schema({
-    name: String,
+    name: { type: String, slug: "title", slug_padding_size: 3, unique_slug: true},
     title: String,
     organizer: {type: ObjectId, ref: 'Organizer'},
     songNames: {type: ObjectId, ref: 'Songs'},
     songNames: [[String]],
     playlistId: String
 });
-
-eventSchema.plugin(URLSlugs('title', {field: 'name'}));
 
 var userSchema = new Schema({
     username:  String,
