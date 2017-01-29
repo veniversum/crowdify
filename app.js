@@ -13,8 +13,6 @@ var express = require('express'),
     SpotifyStrategy = require('passport-spotify').Strategy,
     mongoose = require('mongoose');
 
-// Fixes bug https://github.com/tj/consolidate.js/pull/134
-app.locals.cache = "memory";
 
 var consolidate = require('consolidate');
 
@@ -75,6 +73,9 @@ passport.use('spotify-organizer', new SpotifyStrategy(
   }));
 
 var app = express();
+
+// Fixes bug https://github.com/tj/consolidate.js/pull/134
+app.locals.cache = "memory";
 
 // configure Express
 app.set('views', __dirname + '/views');
