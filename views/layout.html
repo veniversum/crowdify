@@ -2,20 +2,30 @@
 <html>
 	<head>
 		<title>Crowdify</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="/assets_hyperspace/css/main.css" type="text/css"/>
 	</head>
 	<body>
-		{% if !user %}
-			<p>
-			<a href="/">Home</a> |
-			<a href="/login">Log In</a>
-			</p>
-		{% else %}
-			<p>
-			<a href="/">Home</a> |
-			<a href="/account">Account</a> |
-			<a href="/logout">Log Out</a>
-			</p>
-		{% endif %}
+		<section id="sidebar">
+			<div class="inner">
+				<nav>
+					<ul>
+						{% if !user %}
+						<li><a href="/">Home</a></li>
+						<!-- <li><a href="/login">Log In</a></li> -->
+						{% else %}
+						<li><a href="/">Home</a></li>
+						<li><a href="/account">Account</a></li>
+						<li><a href="/logout">Logout</a></li>
+						{% endif %}
+					</ul>
+				</nav>
+			</div>
+		</section>
+
+
 		{% block content %}
+		{% endblock %}
+
 	</body>
 </html>

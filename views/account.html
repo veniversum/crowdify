@@ -1,7 +1,18 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<p>Hello {{ user.displayName }}!</p>
+<div id="wrapper">
+	<section id="intro" class="wrapper style1 fullscreen fade-up">
+		<div class="inner">
+			<h1>Hello {{ user.displayName }}!</h1>
+			<p>Profile: <a href=" {{ user.profileUrl }}">{{ user.profileUrl }}</a></p>
+      <ul class="actions">
+				<li><a href="/createEvent" class="button scrolly">Create event!</a></li>
+			</ul>
+		</div>
+	</section>
+</div>
+<!-- <p>Hello {{ user.displayName }}!</p>
 <p>Profile: <a href=" {{ user.profileUrl }}">{{ user.profileUrl }}</a></p>
-<p>{{ JSON.stringify(user) }}</p>
+<p>{{ JSON.stringify(user) }}</p> -->
 {% endblock %}
