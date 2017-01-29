@@ -150,7 +150,7 @@ app.post('/createEvent', ensureIsOrganizer, function(req, res){
       generator.createPlaylist(req.user.accessToken, req.user.id, eventName, sluggedName)
       schemas.Event.findOne({name:sluggedName}, function(err, event) {
         if (event) {
-          schemas.User.update({username: req.user.username}, {$push:{hostedEvents: event}}, function(err){if (err) throw err;});
+          schemas.User.update({username: req.user.username}, {$addToSet:{hostedEvents: event}}, function(err){if (err) throw err;});
         }
       });
       res.render('eventCreated.html', { eventName: eventName, sluggedName: sluggedName});
@@ -227,7 +227,7 @@ app.get('/callback-attendee',
             res.redirect('/event/'+req.session.event)
           } else {
             grabber.pullAttendeeData(req.user.accessToken, req.session.event);
-            schemas.User.update({username: req.user.username}, {$push:{attendingEvents: event}}, function(err){if (err) throw err;});
+            schemas.User.update({username: req.user.username}, {$addToSet:{attendingEvents: event}}, function(err){if (err) throw err;});
             res.redirect('/event/'+req.session.event)
           } 
         })
