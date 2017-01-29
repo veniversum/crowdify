@@ -41,7 +41,7 @@ function recommendAndUpdate (userId, eventId, spotifyApi,
     updatePlaylist(userId, event.playlistId, [], spotifyApi);
     // console.log("seeds= ", seeds);
     var start=0;
-    for (var i=0; i<seed_tracks.length/5; ++i) {
+    for (var i=0; i<seeds.length/5; ++i) {
       getRecommendations(seeds.slice(start, start+5), spotifyApi,
                          dancing, energetic, positive, instrumental)
         .then(function(recom) {
