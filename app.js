@@ -108,8 +108,8 @@ app.get('/event/:eventId', function(req, res){
           res.render('event.html', { user: req.user, event: req.params.eventId, organizer: true });
         } else {
           res.render('event.html', { user: req.user, event: req.params.eventId });
-        } 
-      });      
+        }
+      });
     } else {
       res.render('eventNotFound.html');
     }
@@ -146,8 +146,22 @@ app.get('/account', ensureAuthenticated, function(req, res){
 });
 
 app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
-  generator.recommendAndUpdate(req.user.accessToken, req.user.username, req.params.eventId);
-  res.render('account.html', { user: req.user });
+  // We need to get the parameters from the get request
+  var dancing = false;
+  var energetic = false;
+  var positive = false;
+  var instrumental = false;
+  schemas.Event.findOne({"name": req.params.eventId}, function(err, event){
+    if (event) {
+      console.log("event exists!");
+      dancing = event.dancing;
+      energetic = event.energetic;
+      positive = event.positive;
+      instrumental = event.instrumental;
+    }
+    generator.recommendAndUpdate(req.user.accessToken, req.user.username, req.params.eventId, dancing, energetic, positive, instrumental);
+    res.render('account.html', { user: req.user });
+  });
 });
 
 app.get('/success', ensureAuthenticated, function(req, res){

@@ -14,7 +14,11 @@ var eventSchema = new Schema({
     organizer: {type: ObjectId, ref: 'Organizer'},
     songNames: {type: ObjectId, ref: 'Songs'},
     songNames: [[String]],
-    playlistId: String
+    playlistId: String,
+    dancing: {type: Boolean, default: false},
+    energetic: {type: Boolean, default: false},
+    positive: {type: Boolean, default: false},
+    instrumental: {type: Boolean, default: false}
 });
 
 var songsSchema = new Schema({
