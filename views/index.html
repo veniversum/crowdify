@@ -5,10 +5,10 @@
 	<section id="intro" class="wrapper style1 fullscreen fade-up">
 		<div class="inner">
 			{% if !user %}
-			<h1>Welcome to Crowdify!</h1>
-			<p>Please log in.</p>
+			<h1>Crowdify: Music from Everyone.</h1>
+			<p>Crowdsourced playlists perfect for your audience.</p>
 			<ul class="actions">
-				<li><a href="/auth/spotify-organizer" class="button scrolly">Login</a></li>
+				<li><a href="/auth/spotify-organizer" class="button scrolly">Log in to get started.</a></li>
 			</ul>
 			{% else %}
       <h1>Hello {{ user.displayName || user.username || user.id }}!</h1>
