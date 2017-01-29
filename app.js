@@ -117,12 +117,12 @@ app.get('/event/:eventId', function(req, res){
               res.render('success.html', { user: req.user, slug: event.name, event: event.title });
             } else {
               res.render('event.html', { user: req.user, slug: event.name, event: event.title });
-            } 
+            }
           })
         } else {
-          res.render('event.html', { user: req.user, slug: event.name, event: event.title }); 
+          res.render('event.html', { user: req.user, slug: event.name, event: event.title });
         }
-      });      
+      });
     } else {
       res.render('eventNotFound.html');
     }
@@ -169,14 +169,14 @@ app.get('/account', ensureAuthenticated, function(req, res){
       attendingEvents = user.attendingEvents.map(function(e){return [e.name, e.title]});
     }
     var hasEvents = hostedEvents.length + attendingEvents.length;
-    console.log(hasEvents); 
+    console.log(hasEvents);
    res.render('account.html', { user: req.user, hostedEvents: hostedEvents, attendingEvents: attendingEvents, hasEvents: hasEvents});
   });
 });
 
 app.get('/generatePlaylist/:eventId', ensureAuthenticated, function(req, res){
   generator.recommendAndUpdate(req.user.accessToken, req.user.username, req.params.eventId);
-  res.render('account.html', { user: req.user });
+  res.render('generatedPlaylist.html', { user: req.user });
 });
 
 app.get('/success', ensureAuthenticated, function(req, res){
@@ -226,7 +226,7 @@ app.get('/callback-attendee',
             grabber.pullAttendeeData(req.user.accessToken, req.session.event);
             schemas.User.update({username: req.user.username}, {$push:{attendingEvents: event}}, function(err){if (err) throw err;});
             res.redirect('/event/'+req.session.event)
-          } 
+          }
         })
       } else {
         res.render('eventNotFound.html');
