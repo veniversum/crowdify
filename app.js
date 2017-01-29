@@ -12,6 +12,9 @@ var express = require('express'),
     schemas = require('./schemas'),
     SpotifyStrategy = require('passport-spotify').Strategy,
     mongoose = require('mongoose');
+    
+// Fixes bug https://github.com/tj/consolidate.js/pull/134
+app.locals.cache = "memory";
 
 var consolidate = require('consolidate');
 
