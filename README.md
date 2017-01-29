@@ -11,7 +11,8 @@ Crowdify is a web app that generates playlists for Spotify. An organiser can cre
 
 Whether at parties, conferences, or meetings, we often need to generate music that a large group of people will like. We'd prefer to be able to do this without explicitly requiring the user to specify songs (as we can do in a collaborative playlist, for instance), instead automatically fetching the user's song preferences which already exist in their Spotify account.	
 
-## License
+## Privacy Policy
+We don't store any personally identifying information from guests who add their preferences to a playlist. We only store a list of the 50 top songs from each (anonymised) user.
 
 
 
